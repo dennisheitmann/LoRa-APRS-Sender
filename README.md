@@ -17,6 +17,6 @@ Sender arbeitet LoRa APRS Gateway zusammen.
 
 Ändere die Zeile mit 
 
-String Tcall="OE1XXX-12";   //your Call Sign
+`String Tcall="OE1XXX-12";   //your Call Sign`
 
 und setze Dein Rufzeichen ein. 
