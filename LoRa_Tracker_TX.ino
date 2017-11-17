@@ -1,19 +1,22 @@
-// NEU: mit Callausgabe gem. Programmzeile 77 ; hier: OE1KEB 
-// NEU: GPS-Eingangspins geaendert auf In:A5, Out:A4  
-// NEU: mit #A1-Batteriespannungseinlesung
-
-// http://www.rcgroups.com/forums/showthread.php?t=2341299
-
 /*
-/*
+LoRa APRS Sender/Tracker for Dragino LoRa/GPS 433 MHz shield
+
+changes:
+ - use PINs for Dragino shield
+ - remove battery/voltage
+
+based on information from
+http://www.rcgroups.com/forums/showthread.php?t=2341299
+
+based on software by
 iot4pi.com
 26/06/2017
 added two new functions
 recalcEncodedGPS() now you can send encoded GPS and altidude data
 recalcGPS() with this function you can send the GPS Data in APRS style 
 Works together with LoRa APRS Gateway
-
 */
+
 /*
 **************************************************************************************************
 ProMiniLoRaTracker_V1 Programs
@@ -31,20 +34,18 @@ intended purpose and free from errors.
 */
 
 //Hardware definitions
-const byte lora_PNSS = 10;	//pin number where the NSS line for the LoRa device is connected.
+const byte lora_PNSS = 10;      //pin number where the NSS line for the LoRa device is connected.
 const byte PLED1 = 8;           //pin number for LED on Tracker
-const byte lora_PReset = 9;	//pin where LoRa device reset line is connected
-const byte lora_PPWMCH = 3;    //pin number for tone generation, connects to LoRa device DIO2.
-static const int RXPin = A5, TXPin = A4;  //pins for soft serial
-static const uint32_t GPSBaud = 9600; //GPS
+const byte lora_PReset = 9;     //pin where LoRa device reset line is connected
+const byte lora_PPWMCH = 3;     //pin number for tone generation, connects to LoRa device DIO2.
+static const int RXPin = 3, TXPin = 4;    //pins for soft serial
+static const uint32_t GPSBaud = 9600;     //GPS
 
-String InputString = "";     //data on buff is copied to this string
-String Outputstring = "";
-String outString="";         //The new Output String with GPS Conversion RAW
-String Tcall="OE1KEB-12";   //your Call Sign
-String sSymbol=">";         //Symbol Code
-float BattVolts; 
-//char charVal[20];
+String Tcall="OE1XXX-12";       //your Call Sign
+String InputString = "";        //data on buff is copied to this string
+String Outputstring = "";       //data for output is copied to this string
+String outString="";            //The new Output String with GPS Conversion RAW
+String sSymbol=">";             //Symbol Code
 
 #include <SPI.h>
 #include "LoRaTX.h"
@@ -52,8 +53,8 @@ float BattVolts;
 #include <SoftwareSerial.h>
 #include <math.h>
 
-TinyGPSPlus gps;   // The TinyGPS++ object
-SoftwareSerial ss(RXPin, TXPin);   // The serial connection to the GPS device
+TinyGPSPlus gps;                  // The TinyGPS++ object
+SoftwareSerial ss(RXPin, TXPin);  // The serial connection to the GPS device
 
 
 ///////////////////////////////////////////////////////////////////////////////////////
@@ -83,12 +84,6 @@ void recalcEncodedGPS(){
   long Lat;
   long Lon;
   int Alt1, Alt2;
-  /*
-  Serial.print("Lat is ");
-  Serial.println(gps.location.lat(),5);
-  Serial.print("Lon is ");
-  Serial.println(gps.location.lng(),5);
-  */
   Tlat=gps.location.lat();
   Tlon=gps.location.lng();
   Talt=gps.altitude.feet();
@@ -102,12 +97,6 @@ void recalcEncodedGPS(){
   if(Tlon<0) { Ew = "W"; } else { Ew = "E"; } 
   Lat=380926*(90-Tlat);
   Lon=190463*(180+Tlon);
-  /*
-  Serial.print("Lat is ");
-  Serial.println(Lat);
-  Serial.print("Lon is ");
-  Serial.println(Lon);
-  */
   outString = (Tcall);
   outString += ">APRS:!";
   outString +="/";
@@ -133,14 +122,6 @@ void recalcEncodedGPS(){
   int ilanThird=iTemp/91;
   //Serial.println(ilanThird);
   int ilanFour=Lat%(long)91;
-  //Serial.println(ilanFour);
-  /*
-  Serial.print("Lan = ");
-  Serial.print(char(ilanFirst+33));
-  Serial.print(char(ilanSecond+33));
-  Serial.print(char(ilanThird+33));
-  Serial.println(char(ilanFour+33));
-  */
   outString +=char(ilanFirst+33);
   outString +=char(ilanSecond+33);
   outString +=char(ilanThird+33);
@@ -159,13 +140,6 @@ void recalcEncodedGPS(){
   int ilonThird=iTemp/91;
   //Serial.println(ilonThird);
   int ilonFour=Lon%(long)91;
-  /*Serial.println(ilonFour);
-  Serial.print("Lon = ");
-  Serial.print(char(ilonFirst+33));
-  Serial.print(char(ilonSecond+33));
-  Serial.print(char(ilonThird+33));
-  Serial.println(char(ilonFour+33));
-  */
   outString +=char(ilonFirst+33);
   outString +=char(ilonSecond+33);
   outString +=char(ilonThird+33);
@@ -175,12 +149,6 @@ void recalcEncodedGPS(){
   outString +=char(Alt1+33); //Altidude 1
   outString +=char(Alt2+33); //Altidude 2
   outString +=char(0x30+33);
-  //outString += " /A=";    
-  //outString += Talt; 
-  //outString += "m Batt=";
-  outString += "Batt="; 
-  outString += String(BattVolts,2); 
-  outString += ("V");
 
   Serial.println("------------------Encode End---");
 }
@@ -194,12 +162,6 @@ void recalcGPS(){
   int Talt;
   float Lat;
   float Lon;
-  /*
-  Serial.print("Lat is ");
-  Serial.println(gps.location.lat(),5);
-  Serial.print("Lon is ");
-  Serial.println(gps.location.lng(),5);
-  */
   Tlat=gps.location.lat();
   Tlon=gps.location.lng();
   Talt=gps.altitude.meters();
@@ -218,12 +180,6 @@ void recalcGPS(){
   if(Tlon < 0) { Tlon= -Tlon; }
   unsigned int Deg_Lon = Tlon; 
   Lon = 100*(Deg_Lon) + (Tlon - Deg_Lon)*60; 
-  /*
-  Serial.print("Lat is ");
-  Serial.println(Lat,5);
-  Serial.print("Lon is ");
-  Serial.println(Lon,5);
-  */
   outString = (Tcall);
   outString += ">APRS:!";
   if(Tlat<10) {outString += "0"; }
@@ -237,16 +193,9 @@ void recalcGPS(){
   outString +=sSymbol;
   outString += " /A=";    
   outString += Talt; 
-  outString += "m Batt="; 
-  outString += String(BattVolts,2); 
-  outString += ("V");   
 
   Serial.print("New Position ");
   Serial.println(outString);
-  //Soll
-  // OE1KEB-12>APRS:!4802.38N/01617.23E> /A=  0m SNR+9dB RSSI=-61db Batt=3.27V
-  //Ist
-  //<ï¿½48.03962,16.28727,  0,OE1KEB-12,3.28,*
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -255,38 +204,17 @@ void displayInfo()
   //Serial.print("Location: ");
   byte i;
   byte ltemp;
-  batt_read();
   Outputstring = "";
 
   if (gps.location.isValid())
   {
     //New System
     recalcEncodedGPS();
-    /*
-    Serial.print("Outputstring= ");
-    Serial.println(outString);
-    delay(10000);
-    return;
-    
-    recalcGPS();
-    */
     Outputstring =outString;
-    /*
-    addtostring(gps.location.lat(), 5, 5, ",");
-    addtostring(gps.location.lng(), 5, 5, ",");
-// replace ident-call according to your requirements
-    addtostring(gps.altitude.meters(), 3, 0, ",OE1KEB-12,");
-    addtostring(BattVolts, 4, 2, ",*");
-    */
     // at this point Outputstring has the LoRa Telemetry data to send
     Serial.print("OutputString is ");
     Serial.println(Outputstring);
     ltemp = Outputstring.length();
-    //Old system
-    //lora_SetModem(lora_BW41_7, lora_SF12, lora_CR4_5, lora_Explicit, lora_LowDoptON);		//Setup the LoRa modem parameters
-    
-    
-    //new System
     lora_SetModem(lora_BW125, lora_SF12, lora_CR4_5, lora_Explicit, lora_LowDoptON);    //Setup the LoRa modem parameters
     lora_PrintModem();                    //Print the modem parameters
     lora_TXStart = 0;
@@ -378,22 +306,3 @@ void setup()
   lora_Tone(1000, 1000, 10);             //Transmit an FM tone, 1000hz, 100ms
   ss.begin(GPSBaud);                          //Startup soft serial for GPS
 }
-
-///////////////////////////////////////////////////////////////////////////////////////
-void batt_read()
-{
-  int BattRead = analogRead(A1);
-  lora_TXBUFF[1] = (BattRead / 256);                     //MSB of battery volts
-  lora_TXBUFF[0] = (BattRead - (lora_TXBUFF[1] * 256));  //LSB of battery volts
-
-  BattVolts = (BattRead * (6.6 / 1023.0)); 
-
-  Serial.print("lora_TXBUFF[0]  ");
-  Serial.println(lora_TXBUFF[0]);
-  Serial.print("lora_TXBUFF[1]  ");
-  Serial.println(lora_TXBUFF[1]);
-  Serial.println("Battery ");
-  Serial.print(BattVolts, 2);
-  Serial.println("V");
-}
-
