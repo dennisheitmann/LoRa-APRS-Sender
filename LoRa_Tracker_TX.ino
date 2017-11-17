@@ -37,7 +37,7 @@ intended purpose and free from errors.
 const byte lora_PNSS = 10;      //pin number where the NSS line for the LoRa device is connected.
 const byte PLED1 = 8;           //pin number for LED on Tracker
 const byte lora_PReset = 9;     //pin where LoRa device reset line is connected
-const byte lora_PPWMCH = 3;     //pin number for tone generation, connects to LoRa device DIO2.
+const byte lora_PPWMCH = 7;     //pin number for tone generation, connects to LoRa device DIO2.
 static const int RXPin = 3, TXPin = 4;    //pins for soft serial
 static const uint32_t GPSBaud = 9600;     //GPS
 
@@ -145,9 +145,9 @@ void recalcEncodedGPS(){
   outString +=char(ilonThird+33);
   outString +=char(ilonFour+33);
   outString +=sSymbol;
-  //outString +=" ";  //No Spped and Course
-  outString +=char(Alt1+33); //Altidude 1
-  outString +=char(Alt2+33); //Altidude 2
+  //outString +=" ";  //No Speed and Course
+  outString +=char(Alt1+33); //Altitude 1
+  outString +=char(Alt2+33); //Altitude 2
   outString +=char(0x30+33);
 
   Serial.println("------------------Encode End---");
@@ -217,7 +217,7 @@ void displayInfo()
     Serial.println(Outputstring);
     ltemp = Outputstring.length();
     lora_SetModem(lora_BW125, lora_SF12, lora_CR4_5, lora_Explicit, lora_LowDoptON);    //Setup the LoRa modem parameters
-    lora_PrintModem();                    //Print the modem parameters
+    lora_PrintModem();                //Print the modem parameters
     lora_TXStart = 0;
     lora_TXEnd = 0;
 
@@ -228,10 +228,10 @@ void displayInfo()
     i--;
     lora_TXEnd = i;
     
-    digitalWrite(PLED1, HIGH);       //LED on during packet
+    digitalWrite(PLED1, HIGH);        //LED on during packet
     lora_Send(lora_TXStart, lora_TXEnd, 60, 255, 1, 10, 10);	//send the packet, data is in TXbuff from lora_TXStart to lora_TXEnd
     digitalWrite(PLED1, LOW);
-    lora_TXPKTInfo();			//print packet information
+    lora_TXPKTInfo();			            //print packet information
     lora_TXBuffPrint(0);
     Serial.println();
     delay(20000);
@@ -245,7 +245,7 @@ void displayInfo()
     
     ltemp = Outputstring.length();
     lora_SetModem(lora_BW125, lora_SF12, lora_CR4_5, lora_Explicit, lora_LowDoptON);    //Setup the LoRa modem parameters
-    lora_PrintModem();                    //Print the modem parameters
+    lora_PrintModem();                //Print the modem parameters
     lora_TXStart = 0;
     lora_TXEnd = 0;
 
@@ -256,10 +256,10 @@ void displayInfo()
     i--;
     lora_TXEnd = i;
 
-    digitalWrite(PLED1, HIGH);       //LED on during packet
+    digitalWrite(PLED1, HIGH);        //LED on during packet
     lora_Send(lora_TXStart, lora_TXEnd, 60, 255, 1, 10, 10);  //send the packet, data is in TXbuff from lora_TXStart to lora_TXEnd
     digitalWrite(PLED1, LOW);
-    lora_TXPKTInfo();     //print packet information
+    lora_TXPKTInfo();                 //print packet information
     lora_TXBuffPrint(0);
     Serial.println();
     delay(20000);
@@ -269,10 +269,10 @@ void displayInfo()
 //////////////////////////////////////////////////////////////////////////////////////////
 void addtostring(double lFloat, byte lmin, byte lprecision, String Stuff) // from dtostrf3
 {
-  char charVal[10];               //temporarily holds data from vals
-  memset(charVal, 0, sizeof(charVal)); //clear array
+  char charVal[10];                             //temporarily holds data from vals
+  memset(charVal, 0, sizeof(charVal));          //clear array
   InputString = "";
-  dtostrf(lFloat, lmin, lprecision, charVal);  //lmin is mininum width, lprecision is precision
+  dtostrf(lFloat, lmin, lprecision, charVal);   //lmin is mininum width, lprecision is precision
   for (int i = 0; i < sizeof(charVal); i++)
   {
     if  (charVal[i] == 0)
@@ -288,22 +288,22 @@ void addtostring(double lFloat, byte lmin, byte lprecision, String Stuff) // fro
 /////////////////////////////////////////////////////////////////////////////////////////
 void setup()
 {
-  Serial.begin(9600);                       //Serial console ouput
+  Serial.begin(9600);                           //Serial console ouput
   Serial.println("ProMiniLoRaTracker_V1");
   Serial.println("Stuart Robinson - July 2015");
   Serial.println();
-  pinMode(lora_PReset, OUTPUT);			// RFM98 reset line
-  digitalWrite(lora_PReset, LOW);		// Reset RFM98
-  pinMode (lora_PNSS, OUTPUT);			// set the slaveSelectPin as an output:
+  pinMode(lora_PReset, OUTPUT);			            //RFM98 reset line
+  digitalWrite(lora_PReset, LOW);		            //Reset RFM98
+  pinMode (lora_PNSS, OUTPUT);			            //set the slaveSelectPin as an output:
   digitalWrite(lora_PNSS, HIGH);
-  pinMode(PLED1, OUTPUT);			// for shield LED
-  SPI.begin();					// initialize SPI:
+  pinMode(PLED1, OUTPUT);			                  // for shield LED
+  SPI.begin();					                        // initialize SPI:
   SPI.setClockDivider(SPI_CLOCK_DIV2);
   SPI.setDataMode(SPI_MODE0);
   SPI.setBitOrder(MSBFIRST);
-  lora_ResetDev();			//Reset the device
-  lora_Setup();				//Do the initial LoRa Setup
-  lora_SetFreq(108, 105, 153);		//Set the LoRa frequency, 434.400 Mhz lora_SetFreq(byte lora_LFMsb, byte lora_LFMid, byte lora_LFLsb)
-  lora_Tone(1000, 1000, 10);             //Transmit an FM tone, 1000hz, 100ms
-  ss.begin(GPSBaud);                          //Startup soft serial for GPS
+  lora_ResetDev();			                        //Reset the device
+  lora_Setup();				                          //Do the initial LoRa Setup
+  lora_SetFreq(108, 105, 153);  //Set the LoRa frequency, (433.650 Mhz = 108/105/153) lora_SetFreq(byte lora_LFMsb, byte lora_LFMid, byte lora_LFLsb)
+  lora_Tone(1000, 1000, 10);                    //Transmit an FM tone, 1000hz, 100ms
+  ss.begin(GPSBaud);                            //Startup soft serial for GPS
 }
