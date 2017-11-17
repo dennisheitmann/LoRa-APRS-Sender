@@ -178,22 +178,23 @@ void recalcGPS(){
   Lat = 100*(Deg_Lat) + (Tlat - Deg_Lat)*60; 
   
   if(Tlon < 0) { Tlon= -Tlon; }
-  unsigned int Deg_Lon = Tlon; 
-  Lon = 100*(Deg_Lon) + (Tlon - Deg_Lon)*60; 
+  unsigned int Deg_Lon = Tlon;
+  Lon = 100*(Deg_Lon) + (Tlon - Deg_Lon)*60;
   outString = (Tcall);
   outString += ">APRS:!";
   if(Tlat<10) {outString += "0"; }
-  outString += String(Lat,2);    
-  outString += Ns;    
+  outString += String(Lat,2);
+  outString += Ns;
   outString += char(92);
   if(Tlon<100) {outString += "0"; }
   if(Tlon<10) {outString += "0"; }
-  outString += String(Lon,2); 
+  outString += String(Lon,2);
   outString += Ew;
   outString +=sSymbol;
-  outString += " /A=";    
-  outString += Talt; 
-
+  outString += " /A=";
+  outString += Talt;
+  outString += "m";
+  
   Serial.print("New Position ");
   Serial.println(outString);
 }
