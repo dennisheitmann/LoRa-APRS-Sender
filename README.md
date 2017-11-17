@@ -1,5 +1,8 @@
-# LoRa-APRS-Sender
+# LoRa-APRS-Sender für Dragino LoRa/GPS shield
 Send encoded GPS Position over Lora to an LoRA APRS Gateway 
+
+Dieser Code ist ein Fork von https://github.com/IoT4pi/LoRa-APRS-Sender
+
 Der Sender ist nach Prinzip des folgenden Links aufgebaut. 
 http://www.kh-gps.de/lora.htm
 
