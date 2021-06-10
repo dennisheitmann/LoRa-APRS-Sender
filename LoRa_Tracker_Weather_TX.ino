@@ -134,7 +134,7 @@ String weather() {
   }
   weatherString += String(Lat, 2);
   weatherString += Ns;
-  weatherString += char(92);
+  weatherString += char(47);
   if (Tlon < 100) {
     weatherString += "0";
   }
@@ -199,7 +199,7 @@ String recalcGPS() {
   }
   outString += String(Lat, 2);
   outString += Ns;
-  outString += char(92);
+  outString += char(47);
   if (Tlon < 100) {
     outString += "0";
   }
