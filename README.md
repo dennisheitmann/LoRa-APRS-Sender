@@ -1,5 +1,6 @@
 # LoRa-APRS-Sender für Dragino LoRa/GPS shield
-Send APRS mic-e encoded GPS position via LoRa to a LoRa APRS Gateway using Dragino LoRa/GPS shield and Arduino Mega
+Send APRS mic-e encoded GPS position via LoRa to a LoRa APRS Gateway using Dragino LoRa/GPS shield and Arduino Mega.
+The weather version sends in addition temperature, relative humidity and barometric pressure measured by a BME280 (I2C).
 
 Please change this line to reflect your callsign:
 
