@@ -44,17 +44,17 @@ uint8_t minute;
 uint8_t second;
 
 ///////////////////////////////////////////////////////////////////////////////////////
-static void updateDateTime(TinyGPSDate &d, TinyGPSTime &t){
-if (d.isValid()) {
-  year = d.year()+2000;
-  month = d.month();
-  day = d.day(); 
+static void updateDateTime(TinyGPSDate &d, TinyGPSTime &t) {
+  if (d.isValid()) {
+    year = d.year() + 2000;
+    month = d.month();
+    day = d.day();
   }
 
-if (t.isValid()){
-  second = t.second();
-  minute = t.minute();
-  hour = t.hour();      
+  if (t.isValid()) {
+    second = t.second();
+    minute = t.minute();
+    hour = t.hour();
   }
 }
 ///////////////////////////////////////////////////////////////////////////////////////
@@ -87,10 +87,18 @@ String weather() {
   sprintf(hour_buf, "%02d", hour);
   sprintf(minute_buf, "%02d", minute);
   temp = bme.readTemperature();
+  int temp_f = (float)temp * 1.8 + 32;
+  char temp_f_buf[4];
+  sprintf(temp_f_buf, "%03d", temp_f);
   baro = bme.readPressure();
+  char baro_buf[6];
+  sprintf(baro_buf, "%05d", (int)(baro / 10));
   humi = bme.readHumidity();
-  int temp_f = (float)temp*1.8+32;
-  int baro_1 = baro/100;
+  if (humi > 99) {
+    humi = 99;
+  }
+  char humi_buf[3];
+  sprintf(humi_buf, "%02d", (int)humi);
   String Ns, Ew;
   float Tlat, Tlon;
   int Talt;
@@ -137,11 +145,11 @@ String weather() {
   weatherString += Ew;
   weatherString += sSymbol;
   weatherString += ".../...g...t";
-  weatherString += temp_f; //%03d
+  weatherString += temp_f_buf;
   weatherString += "r...p...P...h";
-  weatherString += int(humi); //%02d
+  weatherString += humi_buf;
   weatherString += "b";
-  weatherString += baro_1; //%05d
+  weatherString += baro_buf;
   weatherString += "LoRa";
   return weatherString;
 }
