@@ -20,7 +20,6 @@ const byte loraPower = 17;      //power in dBm
 String Tcall = "DO7DH-12";     //your Call Sign
 String InputString = "";        //data on buff is copied to this string
 String Outputstring = "";       //data for output is copied to this string
-String outString = "";          //The new Output String with GPS Conversion RAW
 String sSymbol = "D";           //Symbol Code
 
 #include <Wire.h>
@@ -149,7 +148,7 @@ String weather() {
 //////////////////////////////////////////////////////////////////////////////////////
 //@APA Recalc GPS Position
 String recalcGPS() {
-
+  String outString = "";
   String Ns, Ew;
   float Tlat, Tlon;
   int Talt;
