@@ -213,9 +213,6 @@ String recalcGPS() {
   outString += Talt;
   outString += "m";
 
-  Serial.print("New Position ");
-  Serial.println(outString);
-
   return outString;
 }
 
@@ -253,7 +250,7 @@ void displayInfo()
     lora_TXPKTInfo();			            //print packet information
     lora_TXBuffPrint(0);
     Serial.println();
-    delay(5000);
+    delay(25000);
     // temp,pres,baro
     Outputstring = weather();
     // at this point Outputstring has the LoRa Telemetry data to send
@@ -333,7 +330,7 @@ void addtostring(double lFloat, byte lmin, byte lprecision, String Stuff) // fro
 void setup()
 {
   Serial.begin(9600);                           //Serial console ouput
-  Serial.println("ProMiniLoRaTracker_V1");
+  Serial.println("DennisLoRaAPRSWeatherTX");
   Serial.println(Tcall);
   Serial.println();
   pinMode(lora_PReset, OUTPUT);			            //RFM98 reset line
