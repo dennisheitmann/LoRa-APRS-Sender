@@ -21,6 +21,7 @@ String Tcall = "DO7DH-12";     //your Call Sign
 String InputString = "";        //data on buff is copied to this string
 String Outputstring = "";       //data for output is copied to this string
 String sSymbol = "D";           //Symbol Code
+String wSymbol = "_";           //Weather Symbol Code
 
 #include <Wire.h>
 #include "Adafruit_Sensor.h"
@@ -143,7 +144,7 @@ String weather() {
   }
   weatherString += String(Lon, 2);
   weatherString += Ew;
-  weatherString += sSymbol;
+  weatherString += wSymbol;
   weatherString += ".../...g...t";
   weatherString += temp_f_buf;
   weatherString += "r...p...P...h";
@@ -165,12 +166,6 @@ String recalcGPS() {
   Tlat = gps.location.lat();
   Tlon = gps.location.lng();
   Talt = gps.altitude.meters();
-  Serial.print("Tlat is ");
-  Serial.println(Tlat, 5);
-  Serial.print("Tlon is ");
-  Serial.println(Tlon, 5);
-  Serial.print("Talt is ");
-  Serial.println(Talt);
   if (Tlat < 0) {
     Ns = "S";
   } else {
